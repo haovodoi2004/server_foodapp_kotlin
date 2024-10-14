@@ -5,7 +5,8 @@ const Product=new Schema({
     name: {type:String},
     price: {type:Number,min:1},
     avatar: {type:String},
-    infor: {type:String}
+    infor: {type:String},
+    category: {type:String} 
 },{
     timestamps:true
 })

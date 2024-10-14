@@ -6,7 +6,8 @@ const Users=new Schema({
     email: {type:String,uniqe:true},
     password: {type:String},
     name: {type:String},
-    address: {type:String}
+    address: {type:String},
+    sex:{type:Number}
 },{
     timestamps:true
 })

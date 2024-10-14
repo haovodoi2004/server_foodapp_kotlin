@@ -23,8 +23,6 @@ app.use('/', indexRouter);
 //ten router
 app.use('/us', usersRouter);
 var historyRouter = require('./routes/history');
-app.use('/history', historyRouter);
-var shoprouter=require('./routes/shopcart')
 app.use('/shopcart',shoprouter)
 var prorouter=require('./routes/product')
 app.use('/product',prorouter)
