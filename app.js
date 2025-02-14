@@ -22,12 +22,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 //ten router
 app.use('/us', usersRouter);
-var historyRouter = require('./routes/history');
+var shoprouter=require('./routes/shopcart')
 app.use('/shopcart',shoprouter)
 var prorouter=require('./routes/product')
 app.use('/product',prorouter)
 var oderrouter=require('./routes/oder')
 app.use('/oder',oderrouter)
+var typerouter =require('./routes/productype')
+app.use('/protype',typerouter)
+var newrouter=require('./routes/news')
+app.use('/new',newrouter)
+
+require("dotenv").config();
 
 const database=require('./config/db')
 // catch 404 and forward to error handler

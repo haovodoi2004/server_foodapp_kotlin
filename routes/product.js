@@ -19,8 +19,9 @@ router.get('/getlistproduct',async(req,res)=>{
 
 router.post('/addproduct',async(req,res)=>{
     try {
-        const model=new modelProduct(req.body)
-        const result=await model.save()
+        const { _id, ...productData } = req.body;
+        const newProduct = new modelProduct(productData);
+        const result=await newProduct.save()
         if(result){
             res.json({
                 "status":200,
@@ -42,10 +43,7 @@ router.post('/addproduct',async(req,res)=>{
 
 router.get('/getbyidproduct/:id',async(req,res)=>{
     try {
-        const result=await modelProduct.findById({
-            _id: req.params.id,    // Điều kiện khớp ID
-       // Điều kiện khớp name
-        })
+        const result = await modelProduct.findOne({ _id: req.params.id });
         if(result){
             res.send(result)
         }else{
@@ -57,11 +55,47 @@ router.get('/getbyidproduct/:id',async(req,res)=>{
         }
     } catch (error) {
         console.log("loi khi truy van product "+error);
-        
+    
     }
 })
 
-router.patch('/editproduct/:id',async(req,res)=>{
+router.get('/getbynameproduct/:name',async(req,res)=>{
+    try {
+        const result = await modelProduct.find({ name: req.params.name });
+        if(result){
+            res.send(result)
+        }else{
+            res.json({
+                "status":404,
+                "message":"ko tim thay id product",
+                "data":[]
+            })
+        }
+    } catch (error) {
+        console.log("loi khi truy van product "+error);
+    
+    }
+})
+router.get('/getbycategoryproduct/:category', async (req, res) => {
+    try {
+        const result = await modelProduct.find({
+            category: req.params.category  // Điều kiện khớp category
+        });
+        
+        res.json(result.length > 0 ? result : []);  // Trả về mảng rỗng nếu không có sản phẩm
+    } catch (error) {
+        console.log("Lỗi khi truy vấn product: " + error);
+        res.status(500).json({
+            "status": 500,
+            "message": "Đã xảy ra lỗi khi truy vấn sản phẩm",
+            "error": error.message
+        });
+    }
+});
+
+
+
+router.put('/editproduct/:id',async(req,res)=>{
     try {
       const result=await modelProduct.findOneAndUpdate(
         {_id:req.params.id},req.body

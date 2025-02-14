@@ -14,8 +14,9 @@ router.get('/getlistshopcart',async (req,res)=>{
 
 router.post('/addshopcart',async(req,res)=>{
     try {
-        const model=new modelShop(req.body)
-        const result=await model.save()
+        const { _id, ...shopcarttData } = req.body;
+        const newShopcart = new modelShop(shopcarttData);
+        const result=await newShopcart.save()
         if(result){
             res.json({
                 "status":200,
@@ -56,34 +57,59 @@ router.get('/getbyidshopcart/:id/:email',async(req,res)=>{
     }
 })
 
-router.patch('/editshopcart/:id/:email',async(req,res)=>{
+router.put('/editshopcart/:id',async(req,res)=>{
     try {
       const result=await modelShop.findOneAndUpdate(
-        {_id:req.params.id,email:req.params.email},req.body
+        {_id:req.params.id},req.body
       )
       if(result){
         res.json({
             "status":200,
-            "message":"cập nhật thành công lịch sử giỏ hàng",
+            "message":"cập nhật thành công sản phẩm",
             "data":result
           })
       }else{
         res.json({
           "status":404,
-          "message":"ko tim thay id giỏ hàng de sua",
+          "message":"ko tim thay id sản phẩm de sua",
           "data":[]
         })
       }
     } catch (error) {
-      console.log("lỗi khi cập nhập giỏ hàng "+error);
+      console.log("lỗi khi cập nhập sản phẩm "+error);
       
     }
   })
 
-  router.delete('/deleteshopcart/:id/:email',async(req,res)=>{
+// router.patch('/editshopcart/:id/:email',async(req,res)=>{
+//     try {
+//       const result=await modelShop.findOneAndUpdate(
+//         {_id:req.params.id,email:req.params.email},req.body
+//       )
+//       if(result){
+//         res.json({
+//             "status":200,
+//             "message":"cập nhật thành công lịch sử giỏ hàng",
+//             "data":result
+//           })
+//       }else{
+//         res.json({
+//           "status":404,
+//           "message":"ko tim thay id giỏ hàng de sua",
+//           "data":[]
+//         })
+//       }
+//     } catch (error) {
+//       console.log("lỗi khi cập nhập giỏ hàng "+error);
+      
+//     }
+//   })
+
+
+router.delete('/deleteshopcart/:id',async(req,res)=>{
     try {
         const result=await modelShop.findOneAndDelete({
-            _id:req.params.id,email:req.params.email
+            _id :req.params.id
         })
         if(result){
             res.json({
@@ -104,4 +130,29 @@ router.patch('/editshopcart/:id/:email',async(req,res)=>{
         
     }
   })
+
+//   router.delete('/deleteshopcart/:id/:email',async(req,res)=>{
+//     try {
+//         const result=await modelShop.findOneAndDelete({
+//             _id:req.params.id,email:req.params.email
+//         })
+//         if(result){
+//             res.json({
+//                 "status":200,
+//                 "message":"xoa thanh cong shopcart",
+//                 "data":result
+//             })
+//         }else{
+//             res.json({
+//                 "status":400,
+//                 "message":"xoa that bai shopcart",
+//                 "data":[]
+//             })
+//         }
+
+//     } catch (error) {
+//         console.log("xoa that bai shopcart "+error);
+        
+//     }
+//   })
   module.exports=router

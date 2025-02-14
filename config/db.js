@@ -1,7 +1,7 @@
 const mongoose=require('mongoose')
 mongoose.set('strictQuery',true)
 
-const local = "mongodb://localhost:27017/Lab3";
+const local = "mongodb://localhost:27017/Lab1";
 const connect=async()=>{
     try {
         await mongoose.connect(local);

@@ -12,10 +12,78 @@ router.get('/getlistoder',async(req,res)=>{
     }
 })
 
+router.get('/revenue', async (req, res) => {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+        return res.status(400).json({ error: "Vui lòng cung cấp ngày bắt đầu và ngày kết thúc!" });
+    }
+
+    try {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        // Lọc các đơn hàng trong khoảng thời gian
+        const orders = await modelOder.find({
+            date: {
+                $gte: start.toISOString().split('T')[0],
+                $lte: end.toISOString().split('T')[0]
+            }
+        });
+
+        // Tính tổng doanh thu
+        const totalRevenue = orders.reduce((sum, order) => sum + (order.all || 0), 0);
+
+        // Trả về danh sách đơn hàng và tổng doanh thu
+        res.json({ totalRevenue, orders });
+    } catch (error) {
+        console.error("Lỗi khi tính doanh thu:", error);
+        res.status(500).json({ error: "Lỗi server khi tính doanh thu" });
+    }
+});
+
+
+// router.get('/revenue', async (req, res) => {
+//     const { startDate, endDate } = req.query;
+
+//     if (!startDate || !endDate) {
+//         return res.status(400).json({ error: "Vui lòng cung cấp ngày bắt đầu và ngày kết thúc!" });
+//     }
+
+//     try {
+//         const start = new Date(startDate);
+//         const end = new Date(endDate);
+
+//         const revenue = await modelOder.aggregate([
+//             {
+//                 $match: {
+//                     date: {
+//                         $gte: start.toISOString().split('T')[0],
+//                         $lte: end.toISOString().split('T')[0]
+//                     }
+//                 }
+//             },
+//             {
+//                 $group: {
+//                     _id: null,
+//                     totalRevenue: { $sum: "$all" }
+//                 }
+//             }
+//         ]);
+
+//         const totalRevenue = revenue.length > 0 ? revenue[0].totalRevenue : 0;
+//         res.json({ totalRevenue });
+//     } catch (error) {
+//         console.error("Lỗi khi tính doanh thu:", error);
+//         res.status(500).json({ error: "Lỗi server khi tính doanh thu" });
+//     }
+// });
+
 router.post('/addoder',async(req,res)=>{
     try {
-        const model=new modelOder(req.body)
-        const result=await model.save()
+        const { _id, ...oderData } = req.body;
+        const newOder = new modelOder(oderData);
+        const result=await newOder.save()
         if(result){
             res.json({
                 "status":200,
@@ -35,11 +103,11 @@ router.post('/addoder',async(req,res)=>{
     }
 })
 
-router.get('/getbyidoder/:id/:email',async(req,res)=>{
+router.get('/getbyidoder/:id',async(req,res)=>{
     try {
         const result=await modelOder.findOne({
             _id: req.params.id,    // Điều kiện khớp ID
-      email: req.params.email  // Điều kiện khớp name
+    
         })
         if(result){
             res.send(result)
@@ -55,10 +123,10 @@ router.get('/getbyidoder/:id/:email',async(req,res)=>{
     }
 })
 
-router.patch('/editoder/:id/:email',async(req,res)=>{
+router.put('/editoder/:id',async(req,res)=>{
     try {
       const result=await modelOder.findOneAndUpdate(
-        {_id:req.params.id,email:req.params.email},req.body
+        {_id:req.params.id},req.body
       )
       if(result){
         res.json({
@@ -79,10 +147,10 @@ router.patch('/editoder/:id/:email',async(req,res)=>{
     }
   })
 
-  router.delete('/deleteoder/:id/:email',async(req,res)=>{
+  router.delete('/deleteoder/:id',async(req,res)=>{
     try {
         const result=await modelOder.findOneAndDelete({
-            _id:req.params.id,email:req.params.email
+            _id:req.params.id
         })
         if(result){
             res.json({

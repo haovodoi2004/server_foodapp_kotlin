@@ -6,7 +6,9 @@ const Product=new Schema({
     price: {type:Number,min:1},
     avatar: {type:String},
     infor: {type:String},
-    category: {type:String} 
+    category: {type:String},
+    quantity: {type:Number},
+    status:{type:Number}
 },{
     timestamps:true
 })
